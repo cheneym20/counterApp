@@ -32,7 +32,7 @@ function Counter(backgroundColor, currentNbr, buzz, countBy, secondsToHoldScreen
 }
 
 //Creating object using object template.
-let counter = new Counter("rgb(226, 245, 141)", 0, "N", 1, 1750, "black", "");
+let counter = new Counter("PeachPuff", 0, "N", 1, 1750, "black", "");
 
 //Creating Class
 class CounterStatus{
@@ -97,9 +97,6 @@ function startUpAbout(){
 }
 
 function startUpSettings(){
-
-    
-
     setUpSectionScreen("settings");
     clearMainMenuEventListeners();
 
@@ -108,24 +105,88 @@ function startUpSettings(){
 
     let newList = document.createElement("ul")
 
-    createHTMLElement(newList, "div", "settings_details", "Settings Section.  Attempt to break the fields by adding in incorrect values.", "50px");
+    createHTMLElement(newList, "div", "settings_details", "Settings Section.  I am able to save values and have input validations.  Attempt to break the fields by adding in incorrect values.  ", "50px");
 
-    createHTMLElement(newList, "li", "settings_buzz", "Buzz on Count: ", "25px");
-    createHTMLElement(newList, "li", "settings_count_by", "Count by: ", "25px")
-    createHTMLElement(newList, "li", "settings_hold", "Seconds to hold screen: ", "25px")
-    createHTMLElement(newList, "li", "settings_backgroundcolor", "Counter background color: ", "25px")
+    //createHTMLElement(newList, "li", "settings_buzz", "Buzz on Count: ", 25);
+    createHTMLElement(newList, "li", "settings_count_by", "Count by: ", 25)
+    createHTMLElement(newList, "li", "settings_hold", "Seconds to hold screen: ", 25)
+    createHTMLElement(newList, "li", "settings_backgroundcolor", "Counter background color: ", 50)
+    createHTMLElement(newList, "li", "settings_submit_button", "", 25)
 
     addElementsToList(newList, "50px");
 
-    createInput("settings_buzz", "checkbox", "settings_buzz_input", "80px");
-    createInput("settings_count_by", "number", "count_by_input", "80px");
-    createInput("settings_hold", "number", "settings_hold_input", "120px");
-    createInput("settings_backgroundcolor", "text", "settings_backgroundcolor_input", "120px");
+    //createInput("settings_buzz", "checkbox", "settings_buzz_input", "80px",counter.buzz);
+    createInput("settings_count_by", "number", "count_by_input", "80px", counter.countBy);
+    createInput("settings_hold", "number", "settings_hold_input", "140px", counter.secondsToHoldScreen);
+    createInput("settings_backgroundcolor", "text", "settings_backgroundcolor_input", "260px", counter.backgroundColor);
+    createInput("settings_submit_button", "submit", "settings_submit_button_input", 80, "Save");
     
+    let submitButton = document.getElementById("settings_submit_button");
+    submitButton.addEventListener("click", saveSettings);
 
     startUp.btmBtn.style.backgroundColor = "rgb(247, 129, 129)";
     startUp.btmBtn.addEventListener("click", navToMainMenu);
 }
+
+function saveSettings(){
+    let inputs = Array.from(startUp.topBtn.children[0].children)
+
+    let errorList = "";
+    let numberError = false;
+    let stringError = false;
+    let backgroundColorString = "";
+
+    inputs.map(function(btn){
+        if(btn.children.length > 1){
+            if(btn.children[1].type === "number"){
+                if((btn.children[1].value <= 0 || btn.children[1].value == null || btn.children[1].value == "") && numberError == false){
+
+                    errorList = errorList + "The number fields can't be 0, blank or negative. "
+                    numberError = true;
+                }
+            }
+            if(btn.children[1].type === "text"){
+                backgroundColorString = btn.children[1].value;
+                backgroundColorString = backgroundColorString.toLowerCase();
+                backgroundColorString = backgroundColorString.replace(/\s/g, '')
+
+                if(!isColor(backgroundColorString) && stringError == false){
+                    errorList = errorList + "The background color value is incorrect.  Only color names like 'red' or 'grey' is allowed.  No Hex or RGB allowed. ";
+                    stringError = true;
+                }
+            }
+        }
+    });
+
+    if(numberError || stringError){
+        alert(errorList);
+    }
+    else{
+        let countBy = document.getElementsByClassName("count_by_input");
+        let countByNbr = parseInt(countBy[0].value);
+        if(countByNbr != counter.countBy){
+            counter.countBy = countByNbr;
+        }
+
+        let secondsToHoldScreen = document.getElementsByClassName("settings_hold_input");
+        let secondsToHoldScreenNbr = parseInt(secondsToHoldScreen[0].value);
+        if(secondsToHoldScreenNbr != counter.secondsToHoldScreen){
+            counter.secondsToHoldScreen = secondsToHoldScreenNbr;
+        }
+
+        let backgroundColor = document.getElementsByClassName("settings_backgroundcolor_input");
+        let backgroundColorString = backgroundColor[0].value;
+        if(backgroundColorString != counter.backgroundColor){
+            counter.backgroundColor = backgroundColorString;
+        }
+    }
+}
+
+function isColor(strColor){
+    var s = new Option().style;
+    s.color = strColor;
+    return s.color == strColor;
+  }
 
 function addElementsToList(addedList, paddingAmount){
     startUp.topBtn.appendChild(addedList);
@@ -140,13 +201,13 @@ function createHTMLElement(container, elementType, elementClassName, elementTitl
     let htmlElementTitle = document.createElement("div");
     let htmlElementText = document.createTextNode(elementTitle);
     htmlElementTitle.appendChild(htmlElementText);
-    htmlElement.style.paddingBottom = bottomPadding;
+    htmlElement.style.paddingBottom = bottomPadding + "px";
     htmlElement.appendChild(htmlElementTitle);
 
     container.appendChild(htmlElement);
 }
 
-function createInput(htmlId, inputType, inputClassName, inputWidth){
+function createInput(htmlId, inputType, inputClassName, inputWidth, inputValue){
     let elementContainer = document.getElementById(htmlId);
     
     let HTMLinput = document.createElement("input");
@@ -154,6 +215,7 @@ function createInput(htmlId, inputType, inputClassName, inputWidth){
     HTMLinput.className = inputClassName;
     HTMLinput.style.width = inputWidth;
     elementContainer.appendChild(HTMLinput);
+    HTMLinput.value = inputValue;
 }
 
 
@@ -185,7 +247,7 @@ function navToMainMenu(){
 }
 
 function counterClicked(){
-    ++counter.currentNbr
+    counter.currentNbr = counter.currentNbr + counter.countBy;
     startUp.topBtn.textContent = counter.currentNbr;
 }
 
@@ -204,7 +266,7 @@ function setUpMainMenuButtons(){
 }
  
 function setUpSectionScreen(section){
-    let buttons = Array.from(startUp.container.children); //"Array.from" converted the HTMLCollection into an array.
+    let buttons = Array.from(startUp.container.children); //"Array.from" converts the HTMLCollection into an array.
     buttons.map(btn => btn.className += " " + section);
 
     startUp.topBtn.textContent = counter.currentNbr;
@@ -225,11 +287,9 @@ function mouseUp(){
 }
 
 function execMouseDown(){
-    counter.currentNbr = -1;
+    counter.currentNbr = -counter.countBy;
     startUp.topBtn.textContent = 0;
 }
-
-
 
 
 //////Best  Way///////  Object Blueprint

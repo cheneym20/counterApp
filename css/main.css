@@ -326,3 +326,8 @@ html, body {
 .settings_details{
   font-size: 16px;
 }
+
+.settings_submit_button_input{
+  padding: 10px;
+  border-radius: 10px;
+}
