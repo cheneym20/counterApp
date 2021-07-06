@@ -32,7 +32,7 @@ function Counter(backgroundColor, currentNbr, buzz, countBy, secondsToHoldScreen
 }
 
 //Creating object using object template.
-let counter = new Counter("PeachPuff", 0, "N", 1, 1750, "black", "");
+let counter = new Counter("PeachPuff", 0, "N", 1, 1000, "black", "");
 
 //Creating Class
 class CounterStatus{
@@ -75,6 +75,7 @@ function startUpCounter(){
 
 function setUpCounter(){
     setUpSectionScreen("counter");
+    startUp.topBtn.textContent = counter.currentNbr;
     clearMainMenuEventListeners();
 
     startUp.topBtn.addEventListener("click", counterClicked);
@@ -85,6 +86,7 @@ function setUpCounter(){
 function startUpAbout(){
     setUpSectionScreen("about");
     clearMainMenuEventListeners();
+    clearTopButtonEventListner();
 
     startUp.topBtn.textContent = "";
     startUp.topBtn.style.backgroundColor = "rgb(247, 129, 129)";
@@ -99,17 +101,18 @@ function startUpAbout(){
 function startUpSettings(){
     setUpSectionScreen("settings");
     clearMainMenuEventListeners();
+    clearTopButtonEventListner();
 
     startUp.topBtn.textContent = "";
     startUp.topBtn.style.backgroundColor = "transparent";
 
     let newList = document.createElement("ul")
 
-    createHTMLElement(newList, "div", "settings_details", "Settings Section.  I am able to save values and have input validations.  Attempt to break the fields by adding in incorrect values.  ", "50px");
+    createHTMLElement(newList, "div", "settings_details", "Settings Section.  I am able to save values and have input validations.  Attempt to break the fields by adding in incorrect values.", "100px");
 
     //createHTMLElement(newList, "li", "settings_buzz", "Buzz on Count: ", 25);
     createHTMLElement(newList, "li", "settings_count_by", "Count by: ", 25)
-    createHTMLElement(newList, "li", "settings_hold", "Seconds to hold screen: ", 25)
+    createHTMLElement(newList, "li", "settings_hold", "Milliseconds to hold screen: ", 25)
     createHTMLElement(newList, "li", "settings_backgroundcolor", "Counter background color: ", 50)
     createHTMLElement(newList, "li", "settings_submit_button", "", 25)
 
@@ -230,7 +233,12 @@ function clearCounterEventListeners(){
     startUp.btmBtn.removeEventListener("click", navToMainMenu);
 }
 
-
+function clearTopButtonEventListner(){
+    startUp.topBtn.removeEventListener("click", counterClicked);
+    startUp.topBtn.removeEventListener("click", startUpCounter);
+    startUp.topBtn.removeEventListener("mousedown", mouseDown);
+    startUp.topBtn.removeEventListener("mouseup", mouseUp);
+}
 
 function navToMainMenu(){
     let buttons = Array.from(startUp.container.children)
@@ -268,8 +276,6 @@ function setUpMainMenuButtons(){
 function setUpSectionScreen(section){
     let buttons = Array.from(startUp.container.children); //"Array.from" converts the HTMLCollection into an array.
     buttons.map(btn => btn.className += " " + section);
-
-    startUp.topBtn.textContent = counter.currentNbr;
     startUp.btmBtn.textContent = "Back";
 
     startUp.btmBtn.addEventListener("click", navToMainMenu);
@@ -291,23 +297,4 @@ function execMouseDown(){
     startUp.topBtn.textContent = 0;
 }
 
-
-//////Best  Way///////  Object Blueprint
-// function Person(name, eyeColor, age) {
-//     this.name = name;
-//     this.eyeColor = eyeColor;
-//     this.age = age;
-//     this.updateAge;
-// }
-
-// function updateAge(){
-//     return ++this.age;
-// }
-
-// let person01 = new Person("Daniel", "Blue", 27);
-// let person02 = new Person("Jane", "Brown", 43);
-
-// console.log(person01.name + "'s age is " + person01.age);
-
-
-///////Testing class and methods///////
+/////////////Press and Hold Animation/////////////
