@@ -1,26 +1,3 @@
-// function AppScreen(backgroundColor, fontColor, buttonAmount){
-//     this.backgroundColor = backgroundColor;
-//     this.fontColor = fontColor;
-//     this.buttonAmount = buttonAmount;
-    
-//     for(i=0;i<this.buttonAmount;i++){
-        
-//     }
-
-//     this.getButtonDetails;
-// }
-
-// function GuiButton(btnTitle, btnFunction){
-//     this.btnTitle = btnTitle;
-//     this.btnFunction = btnFunction;
-// }
-
-// function getButtonDetails(btnTitle, btnFunction){
-    
-// }
-
-
-
 //Creating object template.
 function Counter(backgroundColor, currentNbr, buzz, countBy, secondsToHoldScreen, counterTextStatus){
     this.backgroundColor = backgroundColor;
@@ -59,6 +36,9 @@ startUp = {
     midBtn : document.getElementById("mid"),
     btmBtn : document.getElementById("btm"),
     mouseTimer : 0,
+    onHold : false,
+    timer : 0,
+    isTouchDevice : 'ontouchstart' in document.documentElement,
     aboutText : "This was created with Vanilla JavaScript on July 5th, 2021.  Michael Cheney is a developer who is attempting to work hard to develop new things."
 }
 
@@ -78,15 +58,41 @@ function setUpCounter(){
     startUp.topBtn.textContent = counter.currentNbr;
     clearMainMenuEventListeners();
 
-    startUp.topBtn.addEventListener("click", counterClicked);
-    startUp.topBtn.addEventListener("mousedown", mouseDown);
-    document.body.addEventListener("mouseup", mouseUp);
+    if(startUp.isTouchDevice){
+        startUp.topBtn.addEventListener("touchstart", touchstart, false);
+        startUp.topBtn.addEventListener("touchend", touchend, false);
+    }
+    else{
+        startUp.topBtn.addEventListener("click", counterClicked);
+        startUp.topBtn.addEventListener("mousedown", mouseDown);
+        document.body.addEventListener("mouseup", mouseUp);
+    }
+}
+
+function touchstart() {
+    if (!startUp.timer) {
+        startUp.timer = setTimeout(onHold, counter.secondsToHoldScreen);
+    }
+}
+
+function touchend() {
+    if (startUp.timer){
+        clearTimeout(startUp.timer);
+        startUp.timer = null;
+    }
+    counter.currentNbr = counter.currentNbr + counter.countBy;
+    startUp.topBtn.textContent = counter.currentNbr;
+}
+
+onHold = function() {
+    counter.currentNbr = -counter.countBy;
+    startUp.topBtn.textContent = 0;
 }
 
 function startUpAbout(){
-    setUpSectionScreen("about");
     clearMainMenuEventListeners();
-    clearTopButtonEventListner();
+    setUpSectionScreen("about");
+    clearCounterEventListeners();
 
     startUp.topBtn.textContent = "";
     startUp.topBtn.style.backgroundColor = "rgb(247, 129, 129)";
@@ -99,9 +105,9 @@ function startUpAbout(){
 }
 
 function startUpSettings(){
-    setUpSectionScreen("settings");
     clearMainMenuEventListeners();
-    clearTopButtonEventListner();
+    setUpSectionScreen("settings");
+    clearCounterEventListeners();
 
     startUp.topBtn.textContent = "";
     startUp.topBtn.style.backgroundColor = "transparent";
@@ -110,7 +116,6 @@ function startUpSettings(){
 
     createHTMLElement(newList, "div", "settings_details", "Settings Section.  I am able to save values and have input validations.  Attempt to break the fields by adding in incorrect values.", "100px");
 
-    //createHTMLElement(newList, "li", "settings_buzz", "Buzz on Count: ", 25);
     createHTMLElement(newList, "li", "settings_count_by", "Count by: ", 25)
     createHTMLElement(newList, "li", "settings_hold", "Milliseconds to hold screen: ", 25)
     createHTMLElement(newList, "li", "settings_backgroundcolor", "Counter background color: ", 50)
@@ -118,7 +123,6 @@ function startUpSettings(){
 
     addElementsToList(newList, "50px");
 
-    //createInput("settings_buzz", "checkbox", "settings_buzz_input", "80px",counter.buzz);
     createInput("settings_count_by", "number", "count_by_input", "80px", counter.countBy);
     createInput("settings_hold", "number", "settings_hold_input", "140px", counter.secondsToHoldScreen);
     createInput("settings_backgroundcolor", "text", "settings_backgroundcolor_input", "260px", counter.backgroundColor);
@@ -229,15 +233,18 @@ function clearMainMenuEventListeners(){
 }
 
 function clearCounterEventListeners(){
-    startUp.topBtn.removeEventListener("click", counterClicked);
-    startUp.btmBtn.removeEventListener("click", navToMainMenu);
-}
-
-function clearTopButtonEventListner(){
-    startUp.topBtn.removeEventListener("click", counterClicked);
-    startUp.topBtn.removeEventListener("click", startUpCounter);
-    startUp.topBtn.removeEventListener("mousedown", mouseDown);
-    startUp.topBtn.removeEventListener("mouseup", mouseUp);
+    
+    if(startUp.isTouchDevice){
+        startUp.topBtn.removeEventListener("touchstart", touchstart, false);
+        startUp.topBtn.removeEventListener("touchend", touchend, false);
+    }
+    else{
+        startUp.topBtn.removeEventListener("click", counterClicked);
+        
+        startUp.topBtn.removeEventListener("mousedown", mouseDown);
+        startUp.topBtn.removeEventListener("mouseup", mouseUp);
+    }
+    
 }
 
 function navToMainMenu(){
