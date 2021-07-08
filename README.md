@@ -9,5 +9,6 @@ To expand my skillset in Javascript and to use a more ES6 Javascript instead of 
 I've been able to utilize javascript object by creating an object blueprint and created an object using that object blueprint.
 
 I've also put a lot of work into the settings screen to validate values.  And to ensure to save properly.
+Note: This is touch screen compatible.
 
 Please enjoy this counter.
